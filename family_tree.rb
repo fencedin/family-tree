@@ -24,7 +24,9 @@ def menu
     when 'a'
       add_person
     when 'l'
+      clear
       list
+      binding.pry
     when 'm'
       add_marriage
     when 's'
@@ -91,8 +93,8 @@ def show_parents
   list
   puts "Enter the number of the relative you want to see the parents of."
   kid = Person.find(gets.chomp)
-  mom = kid.mom(kid)
-  dad = kid.dad(kid)
+  mom = kid.ancestry(kid, 1)[0]
+  dad = kid.ancestry(kid, 1)[1]
   puts "#{kid.name} has the parents: #{mom.name} and #{dad.name}\n\n"
 end
 

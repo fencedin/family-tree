@@ -15,19 +15,38 @@ class Person < ActiveRecord::Base
     end
   end
 
-# private
+  @@ancestors = []
+
+  def Person.clear
+    @@ancestors = []
+  end
+
+  def ancestry(person, generation)
+    mother = Person.find(person.parents[0].mom_id)
+    if mother != nil
+      @@ancestors << mother
+    else
+      @@ancestors << Person.create(name: "Unknown Mother")
+    end
+    father = Person.find(person.parents[0].dad_id)
+    if father != nil
+      @@ancestors << father
+    else
+      @@ancestors << Person.create(name: "Unknown Father")
+    end
+    if generation > 1
+      mother.ancestry(mother, generation-1)
+      father.ancestry(father, generation-1)
+    else
+      @@ancestors
+    end
+  end
+
+private
 
   def make_marriage_reciprocal
     if spouse_id_changed?
       spouse.update(:spouse_id => id)
     end
-  end
-
-  def mom(kid)
-    Person.find(kid.parents[0].mom_id)
-  end
-
-  def dad(kid)
-    Person.find(kid.parents[0].dad_id)
   end
 end
