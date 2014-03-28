@@ -11,11 +11,13 @@ def menu
   puts 'What would you like to do?'
 
   loop do
-    puts 'Press a to add a family member.'
-    puts 'Press l to list out the family members.'
-    puts 'Press m to add who someone is married to.'
-    puts 'Press s to see who someone is married to.'
-    puts 'Press e to exit.'
+    puts "Press [a] to add a family member."
+    puts "      [l] to list out the family members."
+    puts "      [m] to add who someone is married to."
+    puts "      [s] to see who someone is married to."
+    puts "      [k] to add a kid to 2 people."
+    puts "      [p] to see a persons parents."
+    puts "      [x] to exit."
     choice = gets.chomp
 
     case choice
@@ -27,7 +29,11 @@ def menu
       add_marriage
     when 's'
       show_marriage
-    when 'e'
+    when 'k'
+      add_kid
+    when 'p'
+      show_parents
+    when 'x'
       exit
     end
   end
@@ -47,7 +53,7 @@ def add_marriage
   puts 'What is the number of the second spouse?'
   spouse2 = Person.find(gets.chomp)
   spouse1.update(:spouse_id => spouse2.id)
-  puts spouse1.name + " is now married to " + spouse2.name + "."
+  puts spouse1.name + " is now married to " + spouse2.name + ".\n\n"
 end
 
 def list
@@ -56,7 +62,7 @@ def list
   people.each do |person|
     puts person.id.to_s + " " + person.name
   end
-  puts "\n"
+  puts "\n\n"
 end
 
 def show_marriage
@@ -64,7 +70,35 @@ def show_marriage
   puts "Enter the number of the relative and I'll show you who they're married to."
   person = Person.find(gets.chomp)
   spouse = Person.find(person.spouse_id)
-  puts person.name + " is married to " + spouse.name + "."
+  puts person.name + " is married to " + spouse.name + ".\n\n"
 end
 
+def add_kid
+  list
+  puts "What is the number of kid?"
+  kid = Person.find(gets.chomp)
+  puts "What is the number of the mom?"
+  mom = Person.find(gets.chomp)
+  puts "What is the number of the dad?"
+  dad = Person.find(gets.chomp)
+  Mom.create(person_id: mom.id)
+  Dad.create(person_id: dad.id)
+  Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
+  puts "#{kid.name} now has the parents: #{mom.name} and #{dad.name}\n\n"
+end
+
+def show_parents
+  list
+  puts "Enter the number of the relative you want to see the parents of."
+  kid = Person.find(gets.chomp)
+  mom = kid.mom(kid)
+  dad = kid.dad(kid)
+  puts "#{kid.name} has the parents: #{mom.name} and #{dad.name}\n\n"
+end
+
+
+def clear
+  system "clear && printf '\e[3J'"
+end
+clear
 menu
