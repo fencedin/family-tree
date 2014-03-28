@@ -18,6 +18,8 @@ def menu
     puts "      [k] to add a kid to 2 people."
     puts "      [p] to see a persons parents."
     puts "      [c] to see ancestry."
+    puts "      [n] to see a persons children."
+    puts "      [g] to see progeny."
     puts "      [x] to exit."
     choice = gets.chomp
 
@@ -37,6 +39,10 @@ def menu
       show_parents
     when 'c'
       show_ancestry
+    when 'n'
+      show_kids
+    when 'g'
+      show_progeny
     when 'x'
       exit
     end
@@ -126,6 +132,29 @@ def show_ancestry
   end
   to_del = Person.where("name like ?", "%Unknown%")
   to_del.each {|person| person.destroy}
+end
+
+def show_kids
+  list
+  puts "Enter the number of the relative you want to see the kids of."
+  parent = Person.find(gets.chomp)
+  parent = Parent.where('mom_id = ? OR dad_id = ?', parent.id, parent.id)
+  clear
+  parent.each do |p|
+    puts  "\t" + p.person.name
+  end
+end
+
+def show_progeny
+  list
+  puts "Enter the number of the relative you want to see progeny of."
+  parent = Person.find(gets.chomp)
+  puts "How many generations back do you want to see."
+  gen = gets.chomp.to_i
+  clear
+  parent.progeny(parent, gen, i=0).each do |ans|
+    puts "\t" + ans.name
+  end
 end
 
 

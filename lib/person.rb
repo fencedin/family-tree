@@ -16,9 +16,11 @@ class Person < ActiveRecord::Base
   end
 
   @@ancestors = []
+  @@progenitors = []
 
   def Person.clear
     @@ancestors = []
+    @@progenitors = []
   end
 
   def ancestry(person, generation)
@@ -49,6 +51,32 @@ class Person < ActiveRecord::Base
       end
     rescue
       @@ancestors
+    end
+  end
+
+  def progeny(person, generation, i=0)
+    if i == 0
+      p = Parent.where('mom_id = ? OR dad_id = ?', person.id, person.id)
+      p.each do |parent|
+        @@progenitors << parent.person
+      end
+    else
+      x = @@progenitors.size
+      @@progenitors.each do |person|
+        p = Parent.where('mom_id = ? OR dad_id = ?', person.id, person.id)
+        p.each do |parent|
+          @@progenitors << parent.person
+        end
+        if generation > 1
+          progeny(person, generation-1)
+        end
+      end
+     x.times {@@progenitors.delete_at(0)}
+    end
+    if generation > 1
+      progeny(person, generation-1, i=1)
+    else
+      @@progenitors
     end
   end
 

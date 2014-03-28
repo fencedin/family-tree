@@ -59,9 +59,51 @@ describe Person do
       Dad.create(person_id: gddad.id)
       Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
       Parent.create(mom_id: gmom.id, dad_id: gdad.id, person_id: mom.id)
-      # Parent.create(mom_id: gdmom.id, dad_id: gddad.id, person_id: dad.id)
       array = kid.ancestry(kid, 2)
       array[5].name.should eq "Unknown Father"
+    end
+  end
+
+  context '#progeny' do
+    it 'returns the children & grandchildren of a given person' do
+      kid = Person.create(name: 'bob')
+      mom = Person.create(name: 'june')
+      dad = Person.create(name: 'ward')
+      gmom = Person.create(name: 'sally')
+      gdad = Person.create(name: 'jack')
+      gdmom = Person.create(name: 'jean')
+      gddad = Person.create(name: 'billy')
+      Mom.create(person_id: mom.id)
+      Dad.create(person_id: dad.id)
+      Mom.create(person_id: gmom.id)
+      Dad.create(person_id: gdad.id)
+      Mom.create(person_id: gdmom.id)
+      Dad.create(person_id: gddad.id)
+      Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
+      Parent.create(mom_id: gmom.id, dad_id: gdad.id, person_id: mom.id)
+      array = gdad.progeny(gdad, 2)
+      array.should eq "bob"
+    end
+    it 'returns the children & grandchildren of a given person' do
+      kid1 = Person.create(name: 'bob1')
+      kid2 = Person.create(name: 'bob2')
+      mom = Person.create(name: 'june')
+      dad = Person.create(name: 'ward')
+      gmom = Person.create(name: 'sally')
+      gdad = Person.create(name: 'jack')
+      gdmom = Person.create(name: 'jean')
+      gddad = Person.create(name: 'billy')
+      Mom.create(person_id: mom.id)
+      Dad.create(person_id: dad.id)
+      Mom.create(person_id: gmom.id)
+      Dad.create(person_id: gdad.id)
+      Mom.create(person_id: gdmom.id)
+      Dad.create(person_id: gddad.id)
+      Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid1.id)
+      Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid2.id)
+      Parent.create(mom_id: gmom.id, dad_id: gdad.id, person_id: mom.id)
+      array = gdad.progeny(gdad, 2)
+      array.length.should eq 2
     end
   end
 end
