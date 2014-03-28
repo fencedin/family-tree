@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe Person do
-    before do
-      Person.clear
-    end
+  before do
+    Person.clear
+  end
+
   it { should validate_presence_of :name }
   it { should have_many :moms }
   it { should have_many :dads }
@@ -40,8 +41,6 @@ describe Person do
       Dad.create(person_id: dad.id)
       Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
       kid.ancestry(kid, 1).should eq [mom, dad]
-
-      # kid.dad(kid, 1).name.should eq 'ward'
     end
 
     it 'returns the mother of the mother and father of the father objects given a person' do
@@ -60,11 +59,9 @@ describe Person do
       Dad.create(person_id: gddad.id)
       Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
       Parent.create(mom_id: gmom.id, dad_id: gdad.id, person_id: mom.id)
-      Parent.create(mom_id: gdmom.id, dad_id: gddad.id, person_id: dad.id)
-
-      kid.ancestry(kid, 2).should eq [mom, dad, gmom, gdad, gdmom, gddad]
-
-      # kid.dad(kid, 1).name.should eq 'ward'
+      # Parent.create(mom_id: gdmom.id, dad_id: gddad.id, person_id: dad.id)
+      array = kid.ancestry(kid, 2)
+      array[5].name.should eq "Unknown Father"
     end
   end
 end

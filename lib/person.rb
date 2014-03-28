@@ -22,22 +22,32 @@ class Person < ActiveRecord::Base
   end
 
   def ancestry(person, generation)
-    mother = Person.find(person.parents[0].mom_id)
-    if mother != nil
+    mother = nil
+    begin
+      Person.find(person.parents[0]).name != nil
+      mother = Person.find(person.parents[0].mom_id)
       @@ancestors << mother
-    else
+    rescue
       @@ancestors << Person.create(name: "Unknown Mother")
     end
-    father = Person.find(person.parents[0].dad_id)
-    if father != nil
+
+    father = nil
+    begin
+    Person.find(person.parents[0]).name != nil
+      father = Person.find(person.parents[0].dad_id)
       @@ancestors << father
-    else
+    rescue
       @@ancestors << Person.create(name: "Unknown Father")
     end
-    if generation > 1
-      mother.ancestry(mother, generation-1)
-      father.ancestry(father, generation-1)
-    else
+
+    begin
+      if generation > 1
+        mother.ancestry(mother, generation-1)
+        father.ancestry(father, generation-1)
+      else
+        @@ancestors
+      end
+    rescue
       @@ancestors
     end
   end

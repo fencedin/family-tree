@@ -17,6 +17,7 @@ def menu
     puts "      [s] to see who someone is married to."
     puts "      [k] to add a kid to 2 people."
     puts "      [p] to see a persons parents."
+    puts "      [c] to see ancestry."
     puts "      [x] to exit."
     choice = gets.chomp
 
@@ -26,7 +27,6 @@ def menu
     when 'l'
       clear
       list
-      binding.pry
     when 'm'
       add_marriage
     when 's'
@@ -35,6 +35,8 @@ def menu
       add_kid
     when 'p'
       show_parents
+    when 'c'
+      show_ancestry
     when 'x'
       exit
     end
@@ -72,6 +74,7 @@ def show_marriage
   puts "Enter the number of the relative and I'll show you who they're married to."
   person = Person.find(gets.chomp)
   spouse = Person.find(person.spouse_id)
+  clear
   puts person.name + " is married to " + spouse.name + ".\n\n"
 end
 
@@ -86,6 +89,7 @@ def add_kid
   Mom.create(person_id: mom.id)
   Dad.create(person_id: dad.id)
   Parent.create(mom_id: mom.id, dad_id: dad.id, person_id: kid.id)
+  clear
   puts "#{kid.name} now has the parents: #{mom.name} and #{dad.name}\n\n"
 end
 
@@ -95,8 +99,36 @@ def show_parents
   kid = Person.find(gets.chomp)
   mom = kid.ancestry(kid, 1)[0]
   dad = kid.ancestry(kid, 1)[1]
+  clear
   puts "#{kid.name} has the parents: #{mom.name} and #{dad.name}\n\n"
 end
+
+
+def show_ancestry
+  list
+  puts "Enter the number of the relative you want to see ancestry for."
+  kid = Person.find(gets.chomp)
+  puts "How many generations back do you want to see."
+  gen = gets.chomp.to_i
+  array_of_ancestors = kid.ancestry(kid, gen)
+  if gen == 1
+    clear
+    array= array_of_ancestors[-2..-1]
+    array.each do |ans|
+      puts "\t" + ans.name
+    end
+  else
+    clear
+    array= array_of_ancestors[-(2**gen)..-1]
+    array.each do |ans|
+      puts  "\t" + ans.name
+    end
+  end
+  to_del = Person.where("name like ?", "%Unknown%")
+  to_del.each {|person| person.destroy}
+end
+
+
 
 
 def clear
